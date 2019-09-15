@@ -1,5 +1,5 @@
-from imagesearch import * 
-import checkAdmin, time, pyautogui
+#from imagesearch import * 
+import checkAdmin, cv2, numpy as np, time, pyautogui, ctypes
 from PIL import Image
 
 #Editable Variables
@@ -13,6 +13,18 @@ userAdmin = checkAdmin.is_user_admin()
 if not userAdmin:
     print('Please Run As Admin To Enable Mouse Lock on Click')
     print()
+
+def imagesearch(image, im, precision=0.8):
+    img_rgb = np.array(im)
+    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    template = cv2.imread(image, 0)
+    template.shape[::-1]
+
+    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+    if max_val < precision:
+        return [-1, -1]
+    return max_loc
 
 while True:
     iteration += 1
@@ -28,9 +40,10 @@ while True:
     imageSearchStart = time.time()
 
     #Find Images
+    screenshot = pyautogui.screenshot()
     for img in imageNames:
         #Get Position
-        imgPos = imagesearch(img, imagePrecision)
+        imgPos = imagesearch(img, screenshot, imagePrecision)
 
         #Determine Image Size
         with Image.open(img) as img:
@@ -55,7 +68,7 @@ while True:
 
             if userAdmin:
                 print("Locking Mouse Temporarily & Clicking Icon")
-                status = windll.user32.BlockInput(True) #enable block
+                status = ctypes.windll.user32.BlockInput(True) #enable block
 
                 #Click Icon
                 userPOS = pyautogui.position()
@@ -64,7 +77,7 @@ while True:
                 pyautogui.moveTo(userPOS)
             
                 #Restore Mouse Access
-                status = windll.user32.BlockInput(False) #disable block 
+                status = ctypes.windll.user32.BlockInput(False) #disable block 
                 print("Restored Mouse Access & Location")
             else:
                 #Click Icon
