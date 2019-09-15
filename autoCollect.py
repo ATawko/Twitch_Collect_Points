@@ -5,7 +5,7 @@ from PIL import Image
 #Editable Variables
 iteration = 0
 wait_time = 60
-imageNames = ["./images/twitch_points.png", "./images/test.png"]
+imageNames = ["./images/twitch_points.png"]
 imagePrecision = 0.8
 
 userAdmin = is_user_admin()
