@@ -1,5 +1,4 @@
-import os
-from ctypes import *
+import os, ctypes
 
 class AdminStateUnknownError(Exception):
     """Cannot determine whether the user is an admin."""
@@ -18,6 +17,6 @@ def is_user_admin():
     except AttributeError:
         pass
     try:
-        return windll.shell32.IsUserAnAdmin() == 1
+        return ctypes.windll.shell32.IsUserAnAdmin() == 1
     except AttributeError:
         raise AdminStateUnknownError

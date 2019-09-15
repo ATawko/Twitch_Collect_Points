@@ -1,5 +1,5 @@
-from checkAdmin import *
-from imagesearch import *
+from imagesearch import * 
+import checkAdmin, time, pyautogui
 from PIL import Image
 
 #Editable Variables
@@ -8,7 +8,7 @@ wait_time = 60
 imageNames = ["./images/twitch_points.png"]
 imagePrecision = 0.8
 
-userAdmin = is_user_admin()
+userAdmin = checkAdmin.is_user_admin()
 
 if not userAdmin:
     print('Please Run As Admin To Enable Mouse Lock on Click')
