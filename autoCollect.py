@@ -1,29 +1,55 @@
 from imagesearch import *
+from ctypes import *
+from PIL import Image
 
+#Editable Variables
 iteration = 0
 wait_time = 60
+imageNames = ["./twitch_points.png"]
+imagePrecision = 0.8
 
 while True:
     iteration += 1
-    print(f'Iteration: {iteration}')
+    imgInfo, sizes = [], []
 
-    time1 = time.process_time()
-    
-    for i in range(10):
-        pos = imagesearch("./twitch_points.png", 0.8)
-        #imagesearcharea("./panda.png", 0, 0, 800, 600, 0.8, im)
-    
-    if pos[0] != -1:
-        print("Found Image in: " + str(round(time.process_time() - time1,2)) + " seconds")
-        currentPOS = pyautogui.position()
-        print('Current Mouse Location: ' + str(currentPOS) + ", Image Location: " + str(pos))
+    print(f'Iteration: {iteration}')    
 
-        pyautogui.moveTo(pos[0] + 15, pos[1] + 15)
-        pyautogui.click()
-        pyautogui.moveTo(currentPOS)
+    #Find Images
+    for img in imageNames:
+        #Get Position
+        imgPos = imagesearch(img, imagePrecision)
 
-    else:
-        print("Image Not Found")
+        #Determine Image Size
+        with Image.open(img) as img:
+            width, height = img.size
+
+        #Create Object For Each Image Found
+        imgInfo.append( {"pos" : imgPos, "width" : width, "height" : height} )
+        
+
+    #Click Images
+    for img in imgInfo:
+
+        if img['pos'][0] != -1:
+            print("Found Image")
+
+            print("Locking Mouse Temporarily & Clicking Icon")
+            ok = windll.user32.BlockInput(True) #enable block
+
+            #Click Icon
+            userPOS = pyautogui.position()
+            pyautogui.moveTo(img['pos'][0] + (width/2), img['pos'][1] + (height/2))
+            pyautogui.click()
+            pyautogui.moveTo(userPOS)
+
+            #Restore Mouse Access
+            ok = windll.user32.BlockInput(False) #disable block 
+            print("Restored Mouse Access & Location")
+
+        else:
+            print("Image Not Found")
+
+ 
         
     
     print(f"Pausing for {wait_time} seconds.")
